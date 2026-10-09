@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Ethereal — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07070d; --text: #f4f4fb; --muted: #9a9ab3; --line: rgba(255,255,255,.09);
+      --glass: rgba(255,255,255,.045); --err: #fb7185; --ok: #34d399; --warn: #fbbf24;
+      --grad: linear-gradient(135deg, #8b5cf6 0%, #ec4899 55%, #f59e0b 120%);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .aurora span { position: absolute; width: 480px; height: 480px; border-radius: 50%; filter: blur(110px); opacity: .35; animation: float 18s ease-in-out infinite; }
+    .aurora span:nth-child(1) { background: #7c3aed; top: -140px; left: -120px; }
+    .aurora span:nth-child(2) { background: #db2777; bottom: -180px; right: -100px; animation-delay: -7s; }
+    @keyframes float { 0%,100% { transform: translate(0,0); } 50% { transform: translate(50px,50px); } }
+    .shell { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 26px 16px 70px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; margin-bottom: 20px; }
+    .logo { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: var(--grad); font-size: 15px; }
+    .brand small { color: var(--muted); font-weight: 500; font-size: 13px; margin-left: 4px; }
+    .card { background: var(--glass); border: 1px solid var(--line); border-radius: 24px; padding: 28px 24px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+    .hidden { display: none !important; }
+    h1 { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 32px; letter-spacing: -.4px; }
+    .sub { color: var(--muted); margin-top: 8px; font-size: 14.5px; line-height: 1.6; }
+    input[type="password"], input[type="text"] {
+      width: 100%; background: rgba(0,0,0,.32); border: 1px solid var(--line); border-radius: 14px;
+      padding: 14px 16px; color: var(--text); font: inherit; font-size: 15px; outline: none; transition: all .25s;
+    }
+    input:focus { border-color: rgba(139,92,246,.8); box-shadow: 0 0 0 4px rgba(139,92,246,.16); }
+    .btn { border: 0; cursor: pointer; font: inherit; font-weight: 600; font-size: 14px; padding: 12px 20px; border-radius: 13px; color: #fff; transition: transform .2s, opacity .25s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn.primary { background: var(--grad); box-shadow: 0 10px 28px rgba(236,72,153,.35); }
+    .btn.ghost { background: rgba(255,255,255,.07); border: 1px solid var(--line); }
+    .btn.ok { background: rgba(52,211,153,.16); border: 1px solid rgba(52,211,153,.5); color: #a7f3d0; }
+    .btn.bad { background: rgba(251,113,133,.14); border: 1px solid rgba(251,113,133,.45); color: #fecdd3; }
+    .err { color: var(--err); font-size: 13.5px; min-height: 20px; margin-top: 10px; }
+
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stat { background: var(--glass); border: 1px solid var(--line); border-radius: 16px; padding: 14px; text-align: center; }
+    .stat b { display: block; font-size: 24px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tools input { flex: 1; min-width: 180px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { padding: 9px 15px; border-radius: 99px; font-size: 13px; cursor: pointer; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #d6d6ea; transition: all .25s; }
+    .chip.on { background: var(--grad); border-color: transparent; color: #fff; font-weight: 600; }
+
+    .row { background: var(--glass); border: 1px solid var(--line); border-radius: 20px; margin-bottom: 12px; overflow: hidden; animation: rise .4s ease; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; }
+    .head h3 { font-size: 16px; font-weight: 600; }
+    .head p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .pill { font-size: 11.5px; font-weight: 600; padding: 5px 11px; border-radius: 99px; white-space: nowrap; text-transform: capitalize; }
+    .pill.pending { background: rgba(251,191,36,.14); color: var(--warn); border: 1px solid rgba(251,191,36,.4); }
+    .pill.approved { background: rgba(52,211,153,.14); color: var(--ok); border: 1px solid rgba(52,211,153,.4); }
+    .pill.rejected { background: rgba(251,113,133,.14); color: var(--err); border: 1px solid rgba(251,113,133,.4); }
+    .body { display: none; padding: 4px 18px 18px; border-top: 1px solid var(--line); }
+    .row.open .body { display: block; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; margin-top: 14px; }
+    .item.full { grid-column: 1 / -1; }
+    .item label { display: block; font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .item div { font-size: 14px; line-height: 1.55; word-break: break-word; white-space: pre-wrap; }
+    .item a { color: #c4b5fd; }
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: rgba(139,92,246,.18); border: 1px solid rgba(139,92,246,.4); }
+    .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: #1a1a2b; border: 1px solid var(--line); padding: 12px 20px; border-radius: 14px; font-size: 14px; z-index: 9; box-shadow: 0 14px 40px rgba(0,0,0,.6); }
+    .empty { text-align: center; color: var(--muted); padding: 40px 10px; }
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: 1fr; }
+      .card { padding: 22px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora"><span></span><span></span></div>
+
+  <main class="shell">
+    <header class="brand"><div class="logo">◆</div>Ethereal <small>Admin</small></header>
+
+    <!-- LOGIN -->
+    <section id="loginView" class="card">
+      <h1>Admin <em style="font-style:italic;color:#c4b5fd">access</em></h1>
+      <p class="sub">Enter your admin password to review candidates.</p>
+      <div style="margin-top:22px"><input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" /></div>
+      <p class="err" id="loginErr"></p>
+      <button class="btn primary" id="loginBtn" style="width:100%;margin-top:6px;padding:14px">Sign in</button>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashView" class="hidden">
+      <div class="top">
+        <h1 style="font-size:28px">Candidates</h1>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost" id="refreshBtn">↻ Refresh</button>
+          <button class="btn ghost" id="logoutBtn">Sign out</button>
+        </div>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="tools">
+        <input type="text" id="search" placeholder="Search name, email, role or skill…" />
+        <div class="chips" id="filters">
+          <span class="chip on" data-f="all">All</span>
+          <span class="chip" data-f="pending">Pending</span>
+          <span class="chip" data-f="approved">Approved</span>
+          <span class="chip" data-f="rejected">Rejected</span>
+        </div>
+      </div>
+
+      <div id="list"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (s, r = document) => r.querySelector(s);
+    const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const safeUrl = (u) => (/^https?:\/\//i.test(u || '') ? esc(u) : '');
+
+    let PW = sessionStorage.getItem('eth_admin') || '';
+    let rows = [];
+    let filter = 'all';
+    let query = '';
+    const openRows = new Set();
+
+    async function api(path, body, raw) {
+      const res = await fetch(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': PW },
+        body: JSON.stringify(body || {}),
+      });
+      if (raw) return res;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { const e = new Error(data.error || 'Something went wrong.'); e.status = res.status; throw e; }
+      return data;
+    }
+
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    const fmt = (d) => (d ? new Date(d).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '');
+
+    /* ---------- Login ---------- */
+    async function login() {
+      PW = $('#pw').value || PW;
+      const btn = $('#loginBtn');
+      btn.disabled = true; btn.textContent = 'Checking…';
+      $('#loginErr').textContent = '';
+      try {
+        await load();
+        sessionStorage.setItem('eth_admin', PW);
+        $('#loginView').classList.add('hidden');
+        $('#dashView').classList.remove('hidden');
+      } catch (e) {
+        PW = '';
+        sessionStorage.removeItem('eth_admin');
+        $('#loginErr').textContent = e.status === 401 ? 'Wrong password.' : e.message;
+      }
+      btn.disabled = false; btn.textContent = 'Sign in';
+    }
+    $('#loginBtn').onclick = login;
+    $('#pw').addEventListener('keydown', (e) => e.key === 'Enter' && login());
+    $('#logoutBtn').onclick = () => { sessionStorage.removeItem('eth_admin'); location.reload(); };
+    $('#refreshBtn').onclick = async () => { try { await load(); toast('Refreshed'); } catch (e) { toast(e.message); } };
+
+    /* ---------- Load + render ---------- */
+    async function load() {
+      const data = await api('/api/admin', { action: 'list' });
+      rows = data.rows || [];
+      render();
+    }
+
+    function render() {
+      const count = (s) => rows.filter((r) => r.status === s).length;
+      $('#stats').innerHTML = `
+        <div class="stat"><b>${rows.length}</b><span>Total</span></div>
+        <div class="stat"><b style="color:var(--warn)">${count('pending')}</b><span>Pending</span></div>
+        <div class="stat"><b style="color:var(--ok)">${count('approved')}</b><span>Approved</span></div>
+        <div class="stat"><b style="color:var(--err)">${count('rejected')}</b><span>Rejected</span></div>`;
+
+      const q = query.toLowerCase();
+      const list = rows.filter((r) => {
+        if (filter !== 'all' && r.status !== filter) return false;
+        if (!q) return true;
+        return [r.full_name, r.email, r.role, (r.skills || []).join(' '), r.ref_code].join(' ').toLowerCase().includes(q);
+      });
+
+      if (!list.length) { $('#list').innerHTML = '<div class="empty">No candidates found.</div>'; return; }
+
+      $('#list').innerHTML = list.map((r) => {
+        const open = openRows.has(r.ref_code) ? ' open' : '';
+        const skills = (r.skills || []).map((s) => `<span class="tag">${esc(s)}</span>`).join('') || '—';
+        const li = safeUrl(r.linkedin), pf = safeUrl(r.portfolio);
+        return `
+        <div class="row${open}" data-ref="${esc(r.ref_code)}">
+          <div class="head" data-a="toggle">
+            <div>
+              <h3>${esc(r.full_name)}</h3>
+              <p>${esc(r.role)} · ${esc(r.experience_level)} · ${esc(r.ref_code)}</p>
+            </div>
+            <span class="pill ${esc(r.status)}">${esc(r.status)}</span>
+          </div>
+          <div class="body">
+            <div class="grid">
+              <div class="item"><label>Email</label><div><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></div></div>
+              <div class="item"><label>Contact</label><div>${esc(r.phone)}</div></div>
+              <div class="item"><label>Location</label><div>${esc(r.location) || '—'}</div></div>
+              <div class="item"><label>Applied</label><div>${fmt(r.created_at)}${r.updated_at ? '\nEdited ' + r.edit_count + '× · last ' + fmt(r.updated_at) : ''}</div></div>
+              <div class="item"><label>LinkedIn</label><div>${li ? `<a href="${li}" target="_blank" rel="noopener">${li}</a>` : '—'}</div></div>
+              <div class="item"><label>Portfolio</label><div>${pf ? `<a href="${pf}" target="_blank" rel="noopener">${pf}</a>` : '—'}</div></div>
+              <div class="item full"><label>Skills</label><div class="tags">${skills}</div></div>
+              <div class="item full"><label>Proudest achievement</label><div>${esc(r.top_achievement)}</div></div>
+              <div class="item"><label>Work experience</label><div>${r.has_experience ? 'Yes' : 'None yet'}</div></div>
+              ${r.has_experience ? `
+              <div class="item"><label>Company / Title</label><div>${esc(r.company)} · ${esc(r.job_title)}</div></div>
+              <div class="item"><label>Duration</label><div>${esc(r.duration) || '—'}</div></div>
+              <div class="item full"><label>Responsibilities</label><div>${esc(r.responsibilities) || '—'}</div></div>
+              <div class="item full"><label>Experience achievement</label><div>${esc(r.experience_achievement) || '—'}</div></div>` : ''}
+              <div class="item"><label>Weekly projects</label><div>${r.weekly_available ? 'Available' : 'Not right now'}</div></div>
+              <div class="item"><label>Hours / Start</label><div>${esc(r.hours_per_week) || '—'} · ${esc(r.start_date) || '—'}</div></div>
+              <div class="item"><label>Time zone</label><div>${esc(r.timezone) || '—'}</div></div>
+              <div class="item"><label>Expected rate</label><div>${esc(r.hourly_rate) || '—'}</div></div>
+              <div class="item full"><label>Resume</label><div>${esc(r.resume_name) || '—'}</div></div>
+            </div>
+            <div class="acts">
+              <button class="btn primary" data-a="view">View resume</button>
+              <button class="btn ghost" data-a="download">Download</button>
+              ${r.status !== 'approved' ? '<button class="btn ok" data-a="approved">Approve</button>' : ''}
+              ${r.status !== 'rejected' ? '<button class="btn bad" data-a="rejected">Reject</button>' : ''}
+              ${r.status !== 'pending' ? '<button class="btn ghost" data-a="pending">Move to pending</button>' : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    /* ---------- Actions ---------- */
+    $('#list').addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-a]');
+      if (!btn) return;
+      const rowEl = btn.closest('.row');
+      const ref = rowEl.dataset.ref;
+      const a = btn.dataset.a;
+
+      if (a === 'toggle') {
+        rowEl.classList.toggle('open');
+        rowEl.classList.contains('open') ? openRows.add(ref) : openRows.delete(ref);
+        return;
+      }
+      if (a === 'view' || a === 'download') return openResume(ref, a === 'download', btn);
+      if (['approved', 'rejected', 'pending'].includes(a)) {
+        btn.disabled = true;
+        try {
+          await api('/api/admin', { action: 'setStatus', ref, status: a });
+          const row = rows.find((r) => r.ref_code === ref);
+          if (row) row.status = a;
+          render();
+          toast('Marked as ' + a);
+        } catch (err) { toast(err.message); btn.disabled = false; }
+      }
+    });
+
+    async function openResume(ref, download, btn) {
+      const row = rows.find((r) => r.ref_code === ref);
+      const w = download ? null : window.open('', '_blank');
+      const old = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Loading…';
+      try {
+        const res = await api('/api/resume', { ref }, true);
+        if (!res.ok) throw new Error('Could not load the resume.');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        if (download) {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = (row && row.resume_name) || 'resume.pdf';
+          document.body.appendChild(a); a.click(); a.remove();
+        } else if (w) {
+          w.location = url;
+        } else {
+          location.href = url;
+        }
+      } catch (err) {
+        if (w) w.close();
+        toast(err.message);
+      }
+      btn.disabled = false; btn.textContent = old;
+    }
+
+    /* ---------- Filters + search ---------- */
+    $('#filters').addEventListener('click', (e) => {
+      const c = e.target.closest('.chip');
+      if (!c) return;
+      filter = c.dataset.f;
+      document.querySelectorAll('#filters .chip').forEach((x) => x.classList.toggle('on', x === c));
+      render();
+    });
+    $('#search').addEventListener('input', (e) => { query = e.target.value.trim(); render(); });
+
+    /* ---------- Auto sign-in if password saved this session ---------- */
+    if (PW) {
+      load().then(() => {
+        $('#loginView').classList.add('hidden');
+        $('#dashView').classList.remove('hidden');
+      }).catch(() => { PW = ''; sessionStorage.removeItem('eth_admin'); });
+    }
+  </script>
+</body>
+</html>
