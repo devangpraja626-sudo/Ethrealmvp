@@ -14,6 +14,11 @@ let current = 0;
 let skills = [];
 let resumeFile = null;
 
+// Edit mode state
+let editing = false;
+let editRef = '';
+let existingResumeName = '';
+
 /* ---------- Render chips ---------- */
 function renderChips(id, name, options) {
   $(id).innerHTML = options
@@ -27,6 +32,15 @@ renderChips('#startChips', 'startDate', STARTS);
 
 const val = (id) => $(id).value.trim();
 const radio = (name) => ($(`input[name="${name}"]:checked`) || {}).value || '';
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+function setRadio(name, value) {
+  const el = $$(`input[name="${name}"]`).find((i) => i.value === value);
+  if (el) {
+    el.checked = true;
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+}
 
 /* ---------- Skills tag input ---------- */
 const skillInput = $('#skillInput');
@@ -35,7 +49,7 @@ function renderTags() {
   skills.forEach((s, i) => {
     const el = document.createElement('span');
     el.className = 'tag';
-    el.innerHTML = `${s.replace(/</g, '&lt;')}<button type="button" aria-label="Remove">×</button>`;
+    el.innerHTML = `${esc(s)}<button type="button" aria-label="Remove">×</button>`;
     el.querySelector('button').onclick = () => { skills.splice(i, 1); renderTags(); };
     $('#tagBox').insertBefore(el, skillInput);
   });
@@ -75,7 +89,7 @@ function setResume(file) {
   resumeFile = file;
   drop.classList.add('has');
   drop.classList.remove('invalid');
-  $('#dropText').innerHTML = `<b>${file.name.replace(/</g, '&lt;')}</b><br>${(file.size / 1024).toFixed(0)} KB · click to replace`;
+  $('#dropText').innerHTML = `<b>${esc(file.name)}</b><br>${(file.size / 1024).toFixed(0)} KB · click to replace`;
   showError('');
 }
 
@@ -127,10 +141,10 @@ function validate(step) {
   if (step === 1) {
     if (mark($('#roleChips'), !radio('role'))) fail('Please choose the role that best describes you.');
     if (mark($('#levelChips'), !radio('level'))) fail('Please select your experience level.');
-    if (mark($('#tagBox'), skills.length === 0 && !skillInput.value.trim())) fail('Add at least one skill.');
     if (skillInput.value.trim()) addSkill();
+    if (mark($('#tagBox'), skills.length === 0)) fail('Add at least one skill.');
     if (mark($('#topAchievement'), val('#topAchievement').length < 20)) fail('Tell us a bit more about your proudest achievement.');
-    if (mark($('#drop'), !resumeFile)) fail('Please upload your resume as a PDF.');
+    if (mark($('#drop'), !resumeFile && !existingResumeName)) fail('Please upload your resume as a PDF.');
   }
 
   if (step === 2) {
@@ -159,13 +173,15 @@ function validate(step) {
 }
 
 /* ---------- Navigation ---------- */
+const submitLabel = () => (editing ? 'Save changes ✦' : 'Submit application ✦');
+
 function go(step) {
   current = step;
   $$('.step').forEach((s) => s.classList.toggle('active', Number(s.dataset.step) === step));
   $('#barFill').style.width = ((step + 1) / STEPS) * 100 + '%';
   $$('#stepLabels span').forEach((s, i) => s.classList.toggle('on', i <= step));
   $('#backBtn').classList.toggle('invisible', step === 0);
-  $('#nextBtn').textContent = step === STEPS - 1 ? 'Submit application ✦' : 'Continue →';
+  $('#nextBtn').textContent = step === STEPS - 1 ? submitLabel() : 'Continue →';
   showError('');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -181,7 +197,7 @@ $('#appForm').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.id !== 'skillInput') e.preventDefault();
 });
 
-/* ---------- Submit ---------- */
+/* ---------- Submit (create or update) ---------- */
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -193,7 +209,7 @@ const toBase64 = (file) =>
 async function submit() {
   const btn = $('#nextBtn');
   btn.disabled = true;
-  btn.textContent = 'Submitting…';
+  btn.textContent = editing ? 'Saving…' : 'Submitting…';
   showError('');
 
   try {
@@ -222,11 +238,15 @@ async function submit() {
       startDate: weeklyAvailable ? radio('startDate') : '',
       timezone: weeklyAvailable ? val('#timezone') : '',
       rate: weeklyAvailable ? val('#rate') : '',
-      resume: { name: resumeFile.name, data: await toBase64(resumeFile) },
     };
 
+    if (resumeFile) {
+      payload.resume = { name: resumeFile.name, data: await toBase64(resumeFile) };
+    }
+    if (editing) payload.ref = editRef;
+
     const res = await fetch('/api/apply', {
-      method: 'POST',
+      method: editing ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
@@ -234,19 +254,137 @@ async function submit() {
     if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
 
     localStorage.setItem('ethereal_ref', data.ref);
-    showWaiting(data.ref);
+    localStorage.setItem('ethereal_email', payload.email.toLowerCase());
+
+    const wasEditing = editing;
+    editing = false;
+    showWaiting(data.ref, wasEditing);
   } catch (err) {
     showError(err.message);
     btn.disabled = false;
-    btn.textContent = 'Submit application ✦';
+    btn.textContent = submitLabel();
   }
 }
 
-/* ---------- Waiting screen ---------- */
-function showWaiting(ref) {
+/* ---------- Edit flow ---------- */
+function startEdit(d, ref) {
+  editing = true;
+  editRef = ref;
+  existingResumeName = d.resumeName || '';
+  resumeFile = null;
+
+  $('#lookupView').classList.add('hidden');
+  $('#waitView').classList.add('hidden');
+  $('#formView').classList.remove('hidden');
+  $('#editBanner').classList.remove('hidden');
+  $('#haveApplied').classList.add('hidden');
+  $('#editRefText').textContent = ref;
+
+  $('#fullName').value = d.fullName || '';
+  $('#email').value = d.email || '';
+  $('#email').readOnly = true;
+  $('#phone').value = d.phone || '';
+  $('#location').value = d.location || '';
+  $('#linkedin').value = d.linkedin || '';
+  $('#portfolio').value = d.portfolio || '';
+
+  setRadio('role', d.role);
+  setRadio('level', d.level);
+  skills = Array.isArray(d.skills) ? [...d.skills] : [];
+  renderTags();
+  $('#topAchievement').value = d.topAchievement || '';
+
+  if (existingResumeName) {
+    drop.classList.add('has');
+    $('#dropText').innerHTML = `<b>${esc(existingResumeName)}</b><br>Current resume · click to replace it`;
+    $('#resumeHint').textContent = 'optional while editing';
+  }
+
+  setRadio('hasExperience', d.hasExperience ? 'yes' : 'no');
+  $('#company').value = d.company || '';
+  $('#jobTitle').value = d.jobTitle || '';
+  $('#duration').value = d.duration || '';
+  $('#responsibilities').value = d.responsibilities || '';
+  $('#expAchievement').value = d.expAchievement || '';
+
+  setRadio('weeklyAvailable', d.weeklyAvailable ? 'yes' : 'no');
+  if (d.hours) setRadio('hours', d.hours);
+  if (d.startDate) setRadio('startDate', d.startDate);
+  $('#timezone').value = d.timezone || '';
+  $('#rate').value = d.rate || '';
+  $('#consent').checked = true;
+
+  $('#nextBtn').disabled = false;
+  go(0);
+}
+
+async function loadForEdit(ref, email, errorEl) {
+  errorEl.textContent = '';
+  try {
+    const res = await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref, email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not find your application.');
+
+    localStorage.setItem('ethereal_ref', data.ref);
+    localStorage.setItem('ethereal_email', email.toLowerCase());
+    startEdit(data.application, data.ref);
+  } catch (err) {
+    errorEl.textContent = err.message;
+  }
+}
+
+function showLookup(prefillRef) {
   $('#formView').classList.add('hidden');
+  $('#waitView').classList.add('hidden');
+  $('#lookupView').classList.remove('hidden');
+  if (prefillRef) $('#lookupRef').value = prefillRef;
+  $('#lookupError').textContent = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('#haveApplied').addEventListener('click', () => showLookup(''));
+$('#lookupBack').addEventListener('click', () => location.reload());
+$('#cancelEdit').addEventListener('click', () => location.reload());
+
+$('#lookupBtn').addEventListener('click', async () => {
+  const ref = $('#lookupRef').value.trim().toUpperCase();
+  const email = $('#lookupEmail').value.trim().toLowerCase();
+  const err = $('#lookupError');
+  if (!/^ETH-[A-F0-9]{6}$/.test(ref)) { err.textContent = 'Enter a valid reference code, like ETH-A1B2C3.'; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Enter the email you applied with.'; return; }
+
+  const btn = $('#lookupBtn');
+  btn.disabled = true;
+  btn.textContent = 'Searching…';
+  await loadForEdit(ref, email, err);
+  btn.disabled = false;
+  btn.textContent = 'Find my application';
+});
+
+$('#editBtn').addEventListener('click', async () => {
+  const ref = localStorage.getItem('ethereal_ref');
+  const email = localStorage.getItem('ethereal_email');
+  if (!ref) return;
+  if (!email) return showLookup(ref);
+
+  const btn = $('#editBtn');
+  btn.disabled = true;
+  const line = $('#statusLine');
+  await loadForEdit(ref, email, line);
+  btn.disabled = false;
+});
+
+/* ---------- Waiting screen ---------- */
+function showWaiting(ref, updated) {
+  $('#formView').classList.add('hidden');
+  $('#lookupView').classList.add('hidden');
   $('#waitView').classList.remove('hidden');
   $('#refCode').textContent = ref;
+  $('#updatedNote').classList.toggle('hidden', !updated);
   window.scrollTo({ top: 0, behavior: 'smooth' });
   checkStatus(true);
 }
@@ -272,6 +410,7 @@ async function checkStatus(silent) {
       review.className = 't done';
       decision.className = 't done';
       decision.querySelector('b').textContent = 'Approved 🎉';
+      $('#editBtn').classList.add('hidden');
       line.textContent = 'Status: Approved';
     } else if (data.status === 'rejected') {
       $('#waitTitle').innerHTML = 'Thank you for <em>applying</em>';
@@ -279,11 +418,16 @@ async function checkStatus(silent) {
       review.className = 't done';
       decision.className = 't done';
       decision.querySelector('b').textContent = 'Not selected this time';
+      $('#editBtn').classList.add('hidden');
       line.textContent = 'Status: Not selected';
     } else {
+      $('#waitTitle').innerHTML = "You're in the <em>review queue</em>";
+      $('#waitText').textContent = "Thank you! Our team is reviewing your profile. We'll reach out by email as soon as there's an update. Sit tight.";
       review.className = 't now';
       decision.className = 't';
-      line.textContent = silent ? '' : 'Status: Still under review. We\'ll email you soon.';
+      decision.querySelector('b').textContent = 'Decision';
+      $('#editBtn').classList.remove('hidden');
+      line.textContent = silent ? '' : "Status: Still under review. We'll email you soon.";
     }
   } catch (e) {
     line.textContent = silent ? '' : e.message;
@@ -295,4 +439,4 @@ $('#checkBtn').addEventListener('click', () => checkStatus(false));
 
 /* Returning candidate who already applied on this device */
 const savedRef = localStorage.getItem('ethereal_ref');
-if (savedRef) showWaiting(savedRef);
+if (savedRef) showWaiting(savedRef, false);
