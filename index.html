@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ethereal — Join as a Specialist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="aurora"><span></span><span></span><span></span></div>
+
+  <main class="shell">
+    <header class="brand">
+      <div class="logo">◆</div>
+      <span>Ethereal</span>
+    </header>
+
+    <!-- FORM VIEW -->
+    <section id="formView" class="card">
+      <div class="hero">
+        <p class="eyebrow">Candidate application</p>
+        <h1>Join our <em>specialist network</em></h1>
+        <p class="sub">Tell us about yourself. Every application is reviewed personally by our team.</p>
+      </div>
+
+      <div class="progress">
+        <div class="bar"><i id="barFill"></i></div>
+        <div class="step-labels" id="stepLabels">
+          <span class="on">Personal</span>
+          <span>Professional</span>
+          <span>Experience</span>
+          <span>Availability</span>
+        </div>
+      </div>
+
+      <form id="appForm" novalidate autocomplete="on">
+
+        <!-- STEP 1 -->
+        <div class="step active" data-step="0">
+          <h2>Personal information</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="fullName">Full name</label>
+              <input id="fullName" type="text" placeholder="Jane Doe" autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="jane@email.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="phone">Contact number</label>
+              <input id="phone" type="tel" placeholder="+1 555 000 0000" autocomplete="tel" />
+            </div>
+            <div class="field">
+              <label for="location">City, Country</label>
+              <input id="location" type="text" placeholder="Lahore, Pakistan" autocomplete="address-level2" />
+            </div>
+            <div class="field">
+              <label for="linkedin">LinkedIn <span class="opt">optional</span></label>
+              <input id="linkedin" type="url" placeholder="https://linkedin.com/in/yourname" />
+            </div>
+            <div class="field">
+              <label for="portfolio">Portfolio / GitHub <span class="opt">optional</span></label>
+              <input id="portfolio" type="url" placeholder="https://github.com/yourname" />
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step" data-step="1">
+          <h2>Professional information</h2>
+
+          <div class="field">
+            <label>Which role best describes you?</label>
+            <div class="chips" id="roleChips"></div>
+          </div>
+
+          <div class="field">
+            <label>Your experience level</label>
+            <div class="chips" id="levelChips"></div>
+          </div>
+
+          <div class="field">
+            <label for="skillInput">Key skills <span class="opt">press Enter to add</span></label>
+            <div class="tagbox" id="tagBox">
+              <input id="skillInput" type="text" placeholder="e.g. React, Figma, SQL, Copywriting" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="topAchievement">Your proudest achievement</label>
+            <textarea id="topAchievement" rows="4" placeholder="A project you shipped, a result you drove, something you're proud of…"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Resume <span class="opt">PDF · max 3 MB</span></label>
+            <div class="drop" id="drop">
+              <input type="file" id="resume" accept="application/pdf" hidden />
+              <div class="drop-icon">⬆</div>
+              <p id="dropText"><b>Click to upload</b> or drag &amp; drop your resume</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step" data-step="2">
+          <h2>Work experience</h2>
+
+          <div class="field">
+            <label>Do you have professional work experience?</label>
+            <div class="choice" id="expChoice">
+              <label class="opt-card"><input type="radio" name="hasExperience" value="yes" /><span><b>Yes</b><small>I've worked professionally</small></span></label>
+              <label class="opt-card"><input type="radio" name="hasExperience" value="no" /><span><b>Not yet</b><small>I'm early in my career</small></span></label>
+            </div>
+          </div>
+
+          <div id="expYes" class="reveal">
+            <div class="grid">
+              <div class="field">
+                <label for="company">Most recent company</label>
+                <input id="company" type="text" placeholder="Company name" />
+              </div>
+              <div class="field">
+                <label for="jobTitle">Your job title</label>
+                <input id="jobTitle" type="text" placeholder="e.g. Frontend Developer" />
+              </div>
+              <div class="field full">
+                <label for="duration">How long did you work there?</label>
+                <input id="duration" type="text" placeholder="e.g. 2 years 3 months" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="responsibilities">What were your main responsibilities?</label>
+              <textarea id="responsibilities" rows="3" placeholder="Describe what you did day to day…"></textarea>
+            </div>
+            <div class="field">
+              <label for="expAchievement">Biggest achievement there <span class="opt">optional</span></label>
+              <textarea id="expAchievement" rows="3" placeholder="Numbers and outcomes are great: 'cut load time by 40%'…"></textarea>
+            </div>
+          </div>
+
+          <div id="expNo" class="reveal note">
+            ✨ No problem. Your skills and achievements from the previous step will speak for you.
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step" data-step="3">
+          <h2>Availability</h2>
+
+          <div class="field">
+            <label>Are you available for weekly projects?</label>
+            <div class="choice" id="availChoice">
+              <label class="opt-card"><input type="radio" name="weeklyAvailable" value="yes" /><span><b>Yes</b><small>I can take on projects weekly</small></span></label>
+              <label class="opt-card"><input type="radio" name="weeklyAvailable" value="no" /><span><b>Not right now</b><small>Keep me in the pool</small></span></label>
+            </div>
+          </div>
+
+          <div id="availYes" class="reveal">
+            <div class="field">
+              <label>Hours you can give per week</label>
+              <div class="chips" id="hoursChips"></div>
+            </div>
+            <div class="field">
+              <label>When can you start?</label>
+              <div class="chips" id="startChips"></div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label for="timezone">Your time zone</label>
+                <input id="timezone" type="text" placeholder="e.g. GMT+5" />
+              </div>
+              <div class="field">
+                <label for="rate">Expected rate <span class="opt">optional</span></label>
+                <input id="rate" type="text" placeholder="e.g. $20 / hour" />
+              </div>
+            </div>
+          </div>
+
+          <label class="consent">
+            <input type="checkbox" id="consent" />
+            <span>I confirm the information above is accurate and I agree to be contacted by Ethereal about opportunities.</span>
+          </label>
+        </div>
+
+        <p class="error" id="stepError" role="alert"></p>
+
+        <div class="actions">
+          <button type="button" class="btn ghost" id="backBtn">← Back</button>
+          <button type="button" class="btn primary" id="nextBtn">Continue →</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- WAITING VIEW -->
+    <section id="waitView" class="card hidden">
+      <div class="orb"><i></i><i></i><i></i><b>◆</b></div>
+      <p class="eyebrow center">Application received</p>
+      <h1 class="center" id="waitTitle">You're in the <em>review queue</em></h1>
+      <p class="sub center" id="waitText">Thank you! Our team is reviewing your profile. We'll reach out by email as soon as there's an update. Sit tight.</p>
+
+      <div class="ref">
+        <span>Your reference</span>
+        <strong id="refCode">ETH-000000</strong>
+      </div>
+
+      <div class="timeline">
+        <div class="t done"><i></i><div><b>Application submitted</b><small>We've got everything we need</small></div></div>
+        <div class="t now" id="tReview"><i></i><div><b>Under review</b><small>Our team is looking at your profile</small></div></div>
+        <div class="t" id="tDecision"><i></i><div><b>Decision</b><small>You'll hear from us by email</small></div></div>
+      </div>
+
+      <div class="actions center-actions">
+        <button class="btn ghost" id="checkBtn">Check status</button>
+      </div>
+      <p class="status-line" id="statusLine"></p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
