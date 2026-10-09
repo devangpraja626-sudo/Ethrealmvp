@@ -24,6 +24,15 @@
         <p class="eyebrow">Candidate application</p>
         <h1>Join our <em>specialist network</em></h1>
         <p class="sub">Tell us about yourself. Every application is reviewed personally by our team.</p>
+        <button type="button" class="link-btn" id="haveApplied">Already applied? Edit your application →</button>
+      </div>
+
+      <div class="edit-banner hidden" id="editBanner">
+        <div>
+          <b>Editing your application</b>
+          <small>Update anything below and resubmit. Your reference stays <span id="editRefText"></span>.</small>
+        </div>
+        <button type="button" class="btn ghost small" id="cancelEdit">Cancel</button>
       </div>
 
       <div class="progress">
@@ -96,7 +105,7 @@
           </div>
 
           <div class="field">
-            <label>Resume <span class="opt">PDF · max 3 MB</span></label>
+            <label>Resume <span class="opt" id="resumeHint">PDF · max 3 MB</span></label>
             <div class="drop" id="drop">
               <input type="file" id="resume" accept="application/pdf" hidden />
               <div class="drop-icon">⬆</div>
@@ -195,12 +204,37 @@
       </form>
     </section>
 
+    <!-- LOOKUP VIEW (find an existing application to edit) -->
+    <section id="lookupView" class="card hidden">
+      <p class="eyebrow">Edit application</p>
+      <h1>Find your <em>application</em></h1>
+      <p class="sub">Enter the reference code you received after applying and the email you used.</p>
+
+      <div class="field" style="margin-top:24px">
+        <label for="lookupRef">Reference code</label>
+        <input id="lookupRef" type="text" placeholder="ETH-A1B2C3" autocapitalize="characters" />
+      </div>
+      <div class="field">
+        <label for="lookupEmail">Email</label>
+        <input id="lookupEmail" type="email" placeholder="jane@email.com" />
+      </div>
+
+      <p class="error" id="lookupError" role="alert"></p>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" id="lookupBack">← Back</button>
+        <button type="button" class="btn primary" id="lookupBtn">Find my application</button>
+      </div>
+    </section>
+
     <!-- WAITING VIEW -->
     <section id="waitView" class="card hidden">
       <div class="orb"><i></i><i></i><i></i><b>◆</b></div>
       <p class="eyebrow center">Application received</p>
       <h1 class="center" id="waitTitle">You're in the <em>review queue</em></h1>
       <p class="sub center" id="waitText">Thank you! Our team is reviewing your profile. We'll reach out by email as soon as there's an update. Sit tight.</p>
+
+      <div class="notice hidden" id="updatedNote">✓ Your changes were saved and your application is back in the review queue.</div>
 
       <div class="ref">
         <span>Your reference</span>
@@ -215,6 +249,7 @@
 
       <div class="actions center-actions">
         <button class="btn ghost" id="checkBtn">Check status</button>
+        <button class="btn ghost hidden" id="editBtn">✎ Edit application</button>
       </div>
       <p class="status-line" id="statusLine"></p>
     </section>
