@@ -6,7 +6,7 @@
   <title>Ethereal — Join as a Specialist</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -21,17 +21,9 @@
     <!-- FORM VIEW -->
     <section id="formView" class="card">
       <div class="hero">
-        <p class="eyebrow">Global talent network</p>
+        <p class="eyebrow">Candidate application</p>
         <h1>Join our <em>specialist network</em></h1>
-        <p class="sub">We're collecting talent and skills from across the globe. Work remotely on a weekly or hourly basis. No educational credentials needed. Your skills are enough.</p>
-
-        <div class="perks">
-          <div class="perk"><i class="p-blue">◷</i><b>Weekly &amp; hourly</b><small>Pick the rhythm that fits your life</small></div>
-          <div class="perk"><i class="p-purple">◎</i><b>100% remote</b><small>Work from anywhere in the world</small></div>
-          <div class="perk"><i class="p-red">✦</i><b>Skills first</b><small>No degrees or certificates required</small></div>
-          <div class="perk"><i class="p-silver">◆</i><b>Global talent</b><small>Join specialists from every region</small></div>
-        </div>
-
+        <p class="sub">Tell us about yourself. Every application is reviewed personally by our team.</p>
         <button type="button" class="link-btn" id="haveApplied">Already applied? Edit your application →</button>
       </div>
 
@@ -210,15 +202,6 @@
           <button type="button" class="btn primary" id="nextBtn">Continue →</button>
         </div>
       </form>
-
-      <!-- BUSINESS ENQUIRY -->
-      <div style="margin-top:28px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(201,206,216,.14);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-        <div>
-          <b style="display:block;color:#f1f3f8;font-size:14px">Business enquiries</b>
-          <small style="color:#8b91a1;font-size:12.5px">Hiring talent or want to partner with Ethereal? Write to us.</small>
-        </div>
-        <a href="mailto:ethereal4talent@gmail.com" style="color:#fff;font-weight:600;font-size:13.5px;text-decoration:none;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#ef4444 120%);box-shadow:0 8px 24px -8px rgba(139,92,246,.8)">ethereal4talent@gmail.com</a>
-      </div>
     </section>
 
     <!-- LOOKUP VIEW (find an existing application to edit) -->
@@ -227,7 +210,7 @@
       <h1>Find your <em>application</em></h1>
       <p class="sub">Enter the reference code you received after applying and the email you used.</p>
 
-      <div class="field" style="margin-top:24px">
+      <div class="field" style="margin-top:32px">
         <label for="lookupRef">Reference code</label>
         <input id="lookupRef" type="text" placeholder="ETH-A1B2C3" autocapitalize="characters" />
       </div>
@@ -271,11 +254,54 @@
       <p class="status-line" id="statusLine"></p>
     </section>
 
-    <footer class="foot">
-      Remote · Weekly &amp; hourly · Skills over credentials · Talent from across the globe
-      <br /><br />
-      Business enquiries: <a href="mailto:ethereal4talent@gmail.com" style="color:#c9ced8;text-decoration:none;border-bottom:1px solid rgba(201,206,216,.35);letter-spacing:.04em;text-transform:none">ethereal4talent@gmail.com</a>
-    </footer>
+    <!-- FEATURE SECTIONS (below the form, one by one) -->
+    <section class="features">
+      <p class="eyebrow">Why Ethereal</p>
+      <h2 class="features-title">Built for talent, <em>wherever you are</em></h2>
+
+      <article class="feature">
+        <span class="f-num f-blue">01</span>
+        <div>
+          <h3>Weekly &amp; hourly work</h3>
+          <p>Choose the rhythm that suits you. Take on projects by the week or by the hour and keep full control of your time.</p>
+        </div>
+      </article>
+
+      <article class="feature">
+        <span class="f-num f-purple">02</span>
+        <div>
+          <h3>100% remote</h3>
+          <p>Work from anywhere in the world. All you need is a laptop and a connection.</p>
+        </div>
+      </article>
+
+      <article class="feature">
+        <span class="f-num f-red">03</span>
+        <div>
+          <h3>No educational credentials</h3>
+          <p>No degrees, no certificates. Your skills and the work you've done are all we look at.</p>
+        </div>
+      </article>
+
+      <article class="feature">
+        <span class="f-num f-silver">04</span>
+        <div>
+          <h3>Global talent network</h3>
+          <p>We're collecting talent and skills from across the globe and matching specialists with real projects.</p>
+        </div>
+      </article>
+
+      <article class="feature feature-contact">
+        <span class="f-num f-grad">✉</span>
+        <div>
+          <h3>Business enquiries</h3>
+          <p>Hiring talent or want to partner with Ethereal? Write to us.</p>
+          <a class="mail-link" href="mailto:ethereal4talent@gmail.com">ethereal4talent@gmail.com</a>
+        </div>
+      </article>
+    </section>
+
+    <footer class="foot">© Ethereal · Talent from across the globe</footer>
   </main>
 
   <script src="app.js"></script>
