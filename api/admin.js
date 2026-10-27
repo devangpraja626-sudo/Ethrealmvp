@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
     const sql = neon(process.env.DATABASE_URL);
     const b = req.body || {};
 
+    /* ----- Candidates: change status ----- */
     if (b.action === 'setStatus') {
       const ref = String(b.ref || '').toUpperCase().slice(0, 20);
       const status = String(b.status || '');
@@ -27,7 +28,32 @@ module.exports = async (req, res) => {
       return res.status(200).json({ ok: true });
     }
 
-    // default: list everyone (resume file data is NOT included here)
+    /* ----- Companies: change status ----- */
+    if (b.action === 'setCompanyStatus') {
+      const ref = String(b.ref || '').toUpperCase().slice(0, 20);
+      const status = String(b.status || '');
+      if (!/^CMP-[A-F0-9]{6}$/.test(ref)) return res.status(400).json({ error: 'Invalid reference.' });
+      if (!['waitlist', 'matching', 'matched', 'closed'].includes(status)) return res.status(400).json({ error: 'Invalid status.' });
+      await sql`update company_requests set status = ${status}, updated_at = now() where ref_code = ${ref}`;
+      return res.status(200).json({ ok: true });
+    }
+
+    /* ----- Companies: list ----- */
+    if (b.action === 'listCompanies') {
+      const rows = await sql`
+        select ref_code, company_name, website, industry, company_size, country,
+               contact_name, email, phone, about,
+               project_title, category, description, deliverables,
+               must_have_skills, nice_skills,
+               engagement, hours_per_week, duration, budget, start_date, timezone, notes,
+               status, created_at, updated_at
+        from company_requests
+        order by created_at desc
+      `;
+      return res.status(200).json({ rows });
+    }
+
+    /* ----- Default: list candidates (resume file data is NOT included) ----- */
     const rows = await sql`
       select ref_code, full_name, email, phone, location, linkedin, portfolio,
              role, experience_level, skills, top_achievement,
