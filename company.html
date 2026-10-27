@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ethereal — Company Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="company.css" />
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
+
+  <main class="shell">
+    <header class="brand">
+      <div class="logo">◆</div>
+      <span>Ethereal</span>
+      <em class="ws">Company workspace</em>
+      <a class="nav-link" href="/">I'm a specialist →</a>
+    </header>
+
+    <!-- FORM VIEW -->
+    <section id="formView" class="card">
+      <div class="hero">
+        <p class="eyebrow">For companies</p>
+        <h1>Describe the work. <em>We'll find the match.</em></h1>
+        <p class="sub">Tell us about your company and your project in detail. You join the waitlist first, and matching with the most capable specialist starts when it's your turn.</p>
+      </div>
+
+      <div class="banner hidden" id="banner">
+        <div>
+          <b>Adding another project</b>
+          <small>Your company details for <span id="bannerCo"></span> are already filled in.</small>
+        </div>
+        <button type="button" class="btn ghost small" id="cancelNew">Cancel</button>
+      </div>
+
+      <div class="progress">
+        <div class="bar"><i id="barFill"></i></div>
+        <div class="step-labels" id="stepLabels">
+          <span class="on">Company</span>
+          <span>Project</span>
+          <span>Review</span>
+        </div>
+      </div>
+
+      <form id="coForm" novalidate autocomplete="on">
+
+        <!-- STEP 1: COMPANY -->
+        <div class="step active" data-step="0">
+          <h2>About your company</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="companyName">Company name</label>
+              <input id="companyName" type="text" placeholder="Acme Inc." autocomplete="organization" />
+            </div>
+            <div class="field">
+              <label for="website">Website <span class="opt">optional</span></label>
+              <input id="website" type="url" placeholder="https://acme.com" />
+            </div>
+            <div class="field full">
+              <label>Industry</label>
+              <div class="chips" id="industryChips"></div>
+            </div>
+            <div class="field full">
+              <label>Company size</label>
+              <div class="chips" id="sizeChips"></div>
+            </div>
+            <div class="field">
+              <label for="contactName">Your name</label>
+              <input id="contactName" type="text" placeholder="Jane Doe" autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="email">Work email</label>
+              <input id="email" type="email" placeholder="jane@acme.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="phone">Phone <span class="opt">optional</span></label>
+              <input id="phone" type="tel" placeholder="+1 555 000 0000" autocomplete="tel" />
+            </div>
+            <div class="field">
+              <label for="country">Country</label>
+              <input id="country" type="text" placeholder="United States" autocomplete="country-name" />
+            </div>
+            <div class="field full">
+              <label for="about">What does your company do?</label>
+              <textarea id="about" rows="3" placeholder="A few lines about your product, customers and stage…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: PROJECT -->
+        <div class="step" data-step="1">
+          <h2>Project requirements</h2>
+          <div class="grid">
+            <div class="field full">
+              <label for="projectTitle">Project title</label>
+              <input id="projectTitle" type="text" placeholder="e.g. Build a customer analytics dashboard" />
+            </div>
+            <div class="field full">
+              <label>Category</label>
+              <div class="chips" id="categoryChips"></div>
+            </div>
+            <div class="field full">
+              <label for="description">Describe the project in detail <span class="opt" id="descCount">0 / 80 min</span></label>
+              <textarea id="description" rows="6" placeholder="What needs to be built or done? What problem does it solve? Any tools, stack, constraints or existing work the specialist should know about?"></textarea>
+            </div>
+            <div class="field full">
+              <label for="deliverables">Deliverables &amp; success criteria</label>
+              <textarea id="deliverables" rows="3" placeholder="What exactly should be delivered, and how will you know it's done well?"></textarea>
+            </div>
+            <div class="field full">
+              <label for="mustInput">Must-have skills <span class="opt">press Enter to add</span></label>
+              <div class="tagbox" id="mustBox">
+                <input id="mustInput" type="text" placeholder="e.g. React, Node.js, SQL" />
+              </div>
+            </div>
+            <div class="field full">
+              <label for="niceInput">Nice-to-have skills <span class="opt">optional</span></label>
+              <div class="tagbox" id="niceBox">
+                <input id="niceInput" type="text" placeholder="e.g. Figma, Stripe, AWS" />
+              </div>
+            </div>
+            <div class="field full">
+              <label>Engagement type</label>
+              <div class="chips" id="engagementChips"></div>
+            </div>
+            <div class="field full">
+              <label>Expected workload</label>
+              <div class="chips" id="hoursChips"></div>
+            </div>
+            <div class="field full">
+              <label>Project duration</label>
+              <div class="chips" id="durationChips"></div>
+            </div>
+            <div class="field full">
+              <label>Budget</label>
+              <div class="chips" id="budgetChips"></div>
+            </div>
+            <div class="field full">
+              <label>When should it start?</label>
+              <div class="chips" id="startChips"></div>
+            </div>
+            <div class="field">
+              <label for="timezone">Preferred time zone <span class="opt">optional</span></label>
+              <input id="timezone" type="text" placeholder="e.g. GMT-5 or flexible" />
+            </div>
+            <div class="field">
+              <label for="notes">Anything else? <span class="opt">optional</span></label>
+              <input id="notes" type="text" placeholder="Links, references, special requests" />
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: REVIEW -->
+        <div class="step" data-step="2">
+          <h2>Review &amp; join the waitlist</h2>
+          <div class="review" id="review"></div>
+          <div class="note">Once you join, your project enters the waitlist. Matching with the most capable specialist starts when it's your turn, and our team will email you with their work proof.</div>
+          <label class="consent">
+            <input type="checkbox" id="consent" />
+            <span>I confirm the information above is accurate and I agree to be contacted by Ethereal about this project.</span>
+          </label>
+        </div>
+
+        <p class="error" id="stepError" role="alert"></p>
+
+        <div class="actions">
+          <button type="button" class="btn ghost" id="backBtn">← Back</button>
+          <button type="button" class="btn primary" id="nextBtn">Continue →</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- WAITLIST VIEW -->
+    <section id="waitView" class="card hidden">
+      <div class="orb"><i></i><i></i><i></i><b>◆</b></div>
+      <p class="eyebrow center" id="waitEyebrow">Request received</p>
+      <h1 class="center" id="waitTitle">You're on the <em>waitlist</em></h1>
+      <p class="sub center" id="waitText">Your project is in the queue. Matching starts when it's your turn, and we'll email you as soon as a match is ready.</p>
+
+      <div class="stats-row">
+        <div class="ref">
+          <span>Reference</span>
+          <strong id="refCode">CMP-000000</strong>
+        </div>
+        <div class="ref" id="posBox">
+          <span>Queue position</span>
+          <strong id="posNum">#1</strong>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="t" id="t0"><i></i><div><b>Request received</b><small>We have your company and project details</small></div></div>
+        <div class="t" id="t1"><i></i><div><b>On the waitlist</b><small>Waiting for your turn in the queue</small></div></div>
+        <div class="t" id="t2"><i></i><div><b>Matching</b><small>Finding the most capable specialist</small></div></div>
+        <div class="t" id="t3"><i></i><div><b>Match ready</b><small>You receive their work proof by email</small></div></div>
+      </div>
+
+      <div class="projects hidden" id="projWrap">
+        <h3>Your projects</h3>
+        <div id="projList"></div>
+      </div>
+
+      <div class="actions center-actions">
+        <button class="btn ghost" id="checkBtn">Check status</button>
+        <button class="btn primary" id="newProjBtn">+ Add another project</button>
+      </div>
+      <p class="status-line" id="statusLine"></p>
+    </section>
+
+    <!-- WHY -->
+    <section class="features">
+      <p class="eyebrow">Why Ethereal</p>
+      <h2 class="features-title">Hire proven talent, <em>without the noise</em></h2>
+
+      <article class="feature">
+        <span class="f-num">01</span>
+        <div>
+          <h3>Work proof first</h3>
+          <p>You see real work samples from your best-fit specialist, not just a profile.</p>
+        </div>
+      </article>
+      <article class="feature">
+        <span class="f-num">02</span>
+        <div>
+          <h3>Weekly &amp; hourly, fully remote</h3>
+          <p>Scale a specialist up or down by the week or by the hour, from anywhere in the world.</p>
+        </div>
+      </article>
+      <article class="feature">
+        <span class="f-num">03</span>
+        <div>
+          <h3>Skills over credentials</h3>
+          <p>Matches are based on skills and results, so you get people who can actually deliver.</p>
+        </div>
+      </article>
+    </section>
+
+    <footer class="foot">© Ethereal · Talent from across the globe</footer>
+  </main>
+
+  <script src="company.js"></script>
+</body>
+</html>
