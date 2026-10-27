@@ -3,23 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ethereal — Join as a Specialist</title>
+  <title>Ethereal — Talent &amp; Companies</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="aurora"><span></span><span></span><span></span></div>
+<body class="home">
+  <div class="grid-bg"></div>
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
 
   <main class="shell">
     <header class="brand">
       <div class="logo">◆</div>
       <span>Ethereal</span>
+      <a class="nav-link" href="#home">← Home</a>
     </header>
 
+    <!-- HOME: CHOOSE YOUR PATH -->
+    <section id="homeView" class="card">
+      <p class="eyebrow center">Welcome to Ethereal</p>
+      <h1 class="center">How would you like to <em>get started?</em></h1>
+      <p class="sub center">Join as a specialist to get matched with projects, or post a project as a company and join the waitlist for your match.</p>
+
+      <div class="paths">
+        <a class="path" href="#candidate">
+          <span class="path-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-4 3-6 6.5-6s6 2 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2 .7 3.2 2.6 3.5 6"/></svg>
+          </span>
+          <b>I'm a specialist</b>
+          <small>Apply to join our talent network and get matched with weekly or hourly remote projects. No degrees needed, skills are enough.</small>
+          <span class="path-go">Apply now →</span>
+        </a>
+
+        <a class="path" href="company.html">
+          <span class="path-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg>
+          </span>
+          <b>I'm a company</b>
+          <small>Tell us about your company and your project in detail, join the waitlist, and get matched with the most capable specialist.</small>
+          <span class="path-go">Open company workspace →</span>
+        </a>
+      </div>
+    </section>
+
     <!-- FORM VIEW -->
-    <section id="formView" class="card">
+    <section id="formView" class="card cand">
       <div class="hero">
         <p class="eyebrow">Candidate application</p>
         <h1>Join our <em>specialist network</em></h1>
@@ -205,7 +234,7 @@
     </section>
 
     <!-- LOOKUP VIEW (find an existing application to edit) -->
-    <section id="lookupView" class="card hidden">
+    <section id="lookupView" class="card cand hidden">
       <p class="eyebrow">Edit application</p>
       <h1>Find your <em>application</em></h1>
       <p class="sub">Enter the reference code you received after applying and the email you used.</p>
@@ -228,7 +257,7 @@
     </section>
 
     <!-- WAITING VIEW -->
-    <section id="waitView" class="card hidden">
+    <section id="waitView" class="card cand hidden">
       <div class="orb"><i></i><i></i><i></i><b>◆</b></div>
       <p class="eyebrow center">Application received</p>
       <h1 class="center" id="waitTitle">You're in the <em>review queue</em></h1>
@@ -254,8 +283,8 @@
       <p class="status-line" id="statusLine"></p>
     </section>
 
-    <!-- FEATURE SECTIONS (below the form, one by one) -->
-    <section class="features">
+    <!-- FEATURE SECTIONS (candidate side) -->
+    <section class="features cand">
       <p class="eyebrow">Why Ethereal</p>
       <h2 class="features-title">Built for talent, <em>wherever you are</em></h2>
 
@@ -303,6 +332,62 @@
 
     <footer class="foot">© Ethereal · Talent from across the globe</footer>
   </main>
+
+  <!-- Home / candidate switch + floating icons -->
+  <script>
+    (function () {
+      try {
+        if (!location.hash && localStorage.getItem('ethereal_ref')) {
+          history.replaceState(null, '', '#candidate');
+        }
+      } catch (e) {}
+
+      function apply() {
+        document.body.classList.toggle('home', location.hash !== '#candidate');
+        window.scrollTo(0, 0);
+      }
+      window.addEventListener('hashchange', apply);
+      apply();
+
+      var ICONS = [
+        '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+        '<path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>',
+        '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+        '<path d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 4l-4 16"/>',
+        '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+        '<path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/>',
+        '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+        '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+        '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
+        '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-4 3-6 6.5-6s6 2 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2 .7 3.2 2.6 3.5 6"/>',
+        '<path d="M12 2l9 10-9 10L3 12z"/>',
+        '<path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2M12 15l-3-3a22 22 0 0 1 2-4 12 12 0 0 1 11-5c0 3-1 8-5 11a22 22 0 0 1-4 2z"/><path d="M9 12H4s.5-3 2-4c1.6-1 5 0 5 0M12 15v5s3-.5 4-2c1-1.6 0-5 0-5"/>'
+      ];
+      var box = document.getElementById('floaters');
+      var n = window.innerWidth < 640 ? 12 : 22;
+      for (var i = 0; i < n; i++) {
+        var el = document.createElement('span');
+        el.className = 'fl';
+        var size = 22 + Math.random() * 36;
+        el.style.cssText =
+          'left:' + (Math.random() * 100) + '%;top:' + (Math.random() * 100) + '%;' +
+          '--s:' + size.toFixed(0) + 'px;--d:' + (14 + Math.random() * 18).toFixed(1) + 's;' +
+          '--delay:-' + (Math.random() * 24).toFixed(1) + 's;' +
+          '--o:' + (0.1 + Math.random() * 0.24).toFixed(2) + ';' +
+          '--b:' + (Math.random() < 0.35 ? 1.6 : 0) + 'px;' +
+          '--r:' + Math.round(Math.random() * 40 - 20) + 'deg';
+        el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">' + ICONS[i % ICONS.length] + '</svg>';
+        box.appendChild(el);
+      }
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.addEventListener('mousemove', function (e) {
+          var x = (e.clientX / window.innerWidth - 0.5) * -26;
+          var y = (e.clientY / window.innerHeight - 0.5) * -26;
+          box.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        });
+      }
+    })();
+  </script>
 
   <script src="app.js"></script>
 </body>
